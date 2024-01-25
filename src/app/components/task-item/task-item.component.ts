@@ -1,31 +1,37 @@
-import { Component, Input, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Task } from '../../Task';
-import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { faTimes } from '@fortawesome/free-solid-svg-icons';
-import { TaskService } from '../../services/task.service';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-task-item',
   templateUrl: './task-item.component.html',
-  styleUrl: './task-item.component.css'
+  styleUrls: ['./task-item.component.css']
 })
 
 export class TaskItemComponent implements OnInit {
-  tasks: Task[] = [];
-
   @Input() task: Task | undefined;
-  @Output() onDeleteTask: EventEmitter<Task> = new EventEmitter();
-
+  @Output() onDeleteTask: EventEmitter<Task> = new
+    EventEmitter();
+  @Output() onToggleReminder: EventEmitter<Task> = new
+    EventEmitter();
   faTimes = faTimes;
-
-  constructor(private TaskService: TaskService) { }
-
+  onToggle(task: any) {
+    this.onToggleReminder.emit(task);
+  }
   onDelete(task: any) {
     this.onDeleteTask.emit(task);
+    this.toastr.error('Tarefa Apagada Com Sucesso', 'Task Tracker:', {
+      timeOut: 1500,
+      closeButton: true,
+      progressBar: true,
+      progressAnimation: 'increasing',
+      tapToDismiss: true,
+      easing: 'ease-in',
+      easeTime: 200,
+    })
   }
-
+  constructor(private toastr: ToastrService) { }
   ngOnInit(): void {
-    this.TaskService.getTasks().subscribe(tasks => this.tasks=tasks);
   }
-  
 }
